@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VaultFi - DeFi Lending Platform</title>
+    <title>VaultFi - DeFi Lending & Borrowing Platform</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,62 +20,83 @@
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: #ffffff;
             min-height: 100vh;
+            line-height: 1.6;
         }
 
+        /* Navbar */
         .navbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 3rem;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            padding: 1.25rem 3rem;
+            background: rgba(15, 12, 41, 0.8);
+            backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: bold;
+            gap: 0.75rem;
+            font-size: 1.75rem;
+            font-weight: 800;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            cursor: pointer;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.5rem;
             align-items: center;
         }
 
         .nav-links a {
             color: #a0aec0;
             text-decoration: none;
-            transition: color 0.3s;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
         }
 
-        .nav-links a:hover {
+        .nav-links a:hover, .nav-links a.active {
             color: #ffffff;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
         }
 
         .connect-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
+            padding: 0.75rem 1.75rem;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.95rem;
         }
 
         .connect-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
         }
 
         .connect-btn.connected {
@@ -80,134 +104,181 @@
             border: 1px solid #48bb78;
         }
 
+        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem 3rem;
         }
 
-        .market-size {
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
             text-align: center;
+            padding: 4rem 2rem;
             margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .hero p {
+            color: #a0aec0;
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Stats Banner */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
             padding: 2rem;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            transition: all 0.3s;
         }
 
-        .market-size h2 {
-            font-size: 2rem;
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .stat-card h3 {
+            color: #a0aec0;
+            font-size: 0.9rem;
             margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .market-size .amount {
-            font-size: 3rem;
-            font-weight: bold;
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 800;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .portfolio {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2rem;
-            border-radius: 16px;
+        /* Markets Table - AAVE Style */
+        .markets-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
         }
 
-        .portfolio h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .portfolio-header {
+        .markets-header {
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        .connect-prompt {
-            font-size: 0.875rem;
-            color: #a0aec0;
+        .markets-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
         }
 
-        .connect-prompt button {
-            background: none;
-            border: none;
-            color: #667eea;
-            cursor: pointer;
-            font-weight: 600;
-            margin-left: 0.5rem;
+        .market-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .connect-prompt button:hover {
-            text-decoration: underline;
-        }
-
-        .stat-item {
-            margin-bottom: 1.5rem;
-        }
-
-        .stat-item label {
-            display: block;
-            color: #a0aec0;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .stat-item .value {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .stat-item .value.locked {
-            color: #a0aec0;
-            font-size: 1rem;
-        }
-
-        .health-factor {
-            padding: 0.5rem 1rem;
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1.25rem;
             border-radius: 8px;
-            display: inline-block;
-            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
         }
 
-        .health-factor.good {
-            background: rgba(72, 187, 120, 0.2);
-            color: #48bb78;
-        }
-
-        .health-factor.warning {
-            background: rgba(245, 101, 101, 0.2);
-            color: #f56565;
-        }
-
-        .health-factor.locked {
-            background: rgba(160, 174, 192, 0.2);
-            color: #a0aec0;
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
         }
 
         .markets-table {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 2rem;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .markets-table h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            width: 100%;
+            overflow-x: auto;
         }
 
         table {
@@ -215,86 +286,240 @@
             border-collapse: collapse;
         }
 
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        thead {
+            background: rgba(102, 126, 234, 0.1);
         }
 
         th {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
             color: #a0aec0;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .asset {
+        td {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .asset-info {
             display: flex;
             align-items: center;
             gap: 1rem;
-            font-weight: 600;
         }
 
         .asset-icon {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: bold;
+        }
+
+        .asset-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .asset-symbol {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        .apy-value {
+            font-weight: 700;
+            font-size: 1.1rem;
         }
 
         .apy-supply {
             color: #48bb78;
-            font-weight: 600;
         }
 
         .apy-borrow {
             color: #fc8181;
-            font-weight: 600;
         }
 
-        .action-buttons {
+        .utilization-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .utilization-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .action-btns {
             display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+            gap: 0.75rem;
         }
 
         .btn-supply {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .btn-borrow {
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.65rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        .btn:hover:not(:disabled) {
+        .btn-supply:hover, .btn-borrow:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .btn-supply:disabled {
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        /* Portfolio Section */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
+        .portfolio-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .portfolio-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+            font-size: 0.95rem;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .health-factor {
+            padding: 0.5rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .health-factor.good {
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+        }
+
+        .health-factor.locked {
+            background: rgba(160, 174, 192, 0.2);
+            color: #a0aec0;
+        }
+
+        /* Governance Section */
+        .governance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .governance-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .governance-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .governance-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .governance-card p {
+            color: #a0aec0;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .proposal-list {
+            margin-top: 1.5rem;
+        }
+
+        .proposal-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .proposal-item h4 {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .proposal-meta {
+            display: flex;
+            gap: 1rem;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -302,10 +527,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(5px);
         }
 
         .modal.active {
@@ -314,12 +540,14 @@
 
         .modal-content {
             background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            padding: 2rem;
-            border-radius: 16px;
+            padding: 2.5rem;
+            border-radius: 20px;
             border: 1px solid rgba(102, 126, 234, 0.5);
-            box-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
-            max-width: 500px;
+            box-shadow: 0 0 60px rgba(102, 126, 234, 0.4);
+            max-width: 550px;
             width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -330,7 +558,8 @@
         }
 
         .modal-header h3 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
+            font-weight: 700;
         }
 
         .input-group {
@@ -339,34 +568,43 @@
 
         .input-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             color: #a0aec0;
+            font-weight: 500;
         }
 
         .input-group input {
             width: 100%;
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.05);
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            transition: all 0.3s;
         }
 
-        .input-group input:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .modal-info {
             background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
         }
 
         .modal-info p {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-info p strong {
+            color: #a0aec0;
         }
 
         .modal-buttons {
@@ -378,32 +616,54 @@
             flex: 1;
             background: rgba(255, 255, 255, 0.1);
             color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
         .btn-confirm {
             flex: 2;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
+        .btn-cancel:hover, .btn-confirm:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Info Banner */
         .info-banner {
             background: rgba(102, 126, 234, 0.15);
             border: 1px solid rgba(102, 126, 234, 0.3);
             border-radius: 12px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
+            padding: 1.25rem 1.75rem;
+            margin-bottom: 2.5rem;
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
         .info-banner span {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
         }
 
         .info-banner p {
-            color: #a0aec0;
-            font-size: 0.9rem;
+            color: #cbd5e0;
+            font-size: 0.95rem;
         }
 
         .info-banner a {
@@ -416,86 +676,163 @@
             text-decoration: underline;
         }
 
+        /* Responsive */
         @media (max-width: 968px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .navbar {
                 padding: 1rem 1.5rem;
                 flex-wrap: wrap;
                 gap: 1rem;
             }
-            
+
             .nav-links {
-                gap: 1rem;
+                gap: 1.5rem;
                 flex-wrap: wrap;
             }
-            
+
             .container {
                 padding: 1rem 1.5rem;
             }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            th, td {
+                padding: 1rem;
+            }
+
+            .action-btns {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
+    <!-- Navbar -->
     <nav class="navbar">
-        <div class="logo">
+        <div class="logo" onclick="showSection('dashboard')">
             <span>🏦</span>
             <span>VaultFi</span>
         </div>
         <div class="nav-links">
-            <a href="#dashboard">Dashboard</a>
-            <a href="#markets">Markets</a>
-            <a href="#governance">Governance</a>
+            <a href="#dashboard" class="nav-link active" onclick="showSection('dashboard')">Dashboard</a>
+            <a href="#markets" class="nav-link" onclick="showSection('markets')">Markets</a>
+            <a href="#governance" class="nav-link" onclick="showSection('governance')">Governance</a>
             <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
                 <span id="walletText">Connect Wallet</span>
             </button>
         </div>
     </nav>
 
-    <div class="container" id="dashboard">
-        <!-- Banner informativo -->
+    <div class="container">
+        <!-- Info Banner -->
         <div class="info-banner">
             <span>🔍</span>
-            <p>Explora nuestras tasas y mercados sin conectar tu wallet. <strong>Conéctate solo cuando quieras operar.</strong> <a href="#markets">Ver mercados →</a></p>
+            <p>Explora nuestras tasas competitivas y mercados DeFi. <strong>Conéctate solo cuando quieras operar.</strong> <a href="#markets" onclick="showSection('markets')">Ver todos los mercados →</a></p>
         </div>
 
-        <div id="mainContent">
-            <div class="market-size">
-                <h2>Total Market Size</h2>
-                <div class="amount">$2.4B</div>
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="section active">
+            <div class="hero">
+                <h1>Bienvenido a VaultFi</h1>
+                <p>La plataforma DeFi de próxima generación para lending y borrowing con las mejores tasas del mercado</p>
+                <div class="cta-buttons">
+                    <button class="btn-primary" onclick="connectWallet()">Conectar Wallet</button>
+                    <button class="btn-secondary" onclick="showSection('markets')">Explorar Mercados</button>
+                </div>
+            </div>
+
+            <div class="stats-banner">
+                <div class="stat-card">
+                    <h3>Total Value Locked</h3>
+                    <div class="value">$2.4B</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Supplied</h3>
+                    <div class="value">$1.8B</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Borrowed</h3>
+                    <div class="value">$890M</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Users</h3>
+                    <div class="value">45.2K</div>
+                </div>
             </div>
 
             <div class="dashboard-grid">
-                <div class="portfolio">
-                    <div class="portfolio-header">
-                        <h3>📊 My Portfolio</h3>
-                        <span id="portfolioStatus" class="connect-prompt">
-                            <button onclick="connectWallet()">Conectar para ver tus datos</button>
-                        </span>
+                <div class="portfolio-card">
+                    <h3>📊 My Portfolio</h3>
+                    <div id="portfolioContent">
+                        <div class="stat-row">
+                            <span class="stat-label">Total Supplied</span>
+                            <span class="stat-value" id="totalSupplied">—</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Total Borrowed</span>
+                            <span class="stat-value" id="totalBorrowed">—</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Net Worth</span>
+                            <span class="stat-value" id="netWorth">—</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Health Factor</span>
+                            <span class="health-factor locked" id="healthFactor">—</span>
+                        </div>
                     </div>
-                    
-                    <div class="stat-item">
-                        <label>Total Supplied</label>
-                        <div class="value locked" id="totalSupplied">—</div>
-                    </div>
-                    <div class="stat-item">
-                        <label>Total Borrowed</label>
-                        <div class="value locked" id="totalBorrowed">—</div>
-                    </div>
-                    <div class="stat-item">
-                        <label>Net Worth</label>
-                        <div class="value locked" id="netWorth">—</div>
-                    </div>
-                    <div class="stat-item">
-                        <label>Health Factor</label>
-                        <div class="health-factor locked" id="healthFactor">—</div>
+                    <div id="connectPrompt" style="text-align: center; padding: 2rem; color: #a0aec0;">
+                        <p style="margin-bottom: 1rem;">🔗 Conecta tu wallet para ver tu portfolio</p>
+                        <button class="btn-primary" onclick="connectWallet()">Conectar Ahora</button>
                     </div>
                 </div>
 
-                <div class="markets-table" id="markets">
-                    <h3>💱 Markets</h3>
+                <div class="portfolio-card">
+                    <h3>📈 Tus Posiciones</h3>
+                    <div id="positionsContent" style="color: #a0aec0; text-align: center; padding: 3rem;">
+                        <p>No hay posiciones activas</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">Conecta tu wallet y comienza a operar en nuestros mercados</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MARKETS SECTION -->
+        <section id="markets" class="section">
+            <div class="markets-container">
+                <div class="markets-header">
+                    <div>
+                        <h2>💱 Markets</h2>
+                        <p style="color: #a0aec0; margin-top: 0.5rem;">Explora todos los activos disponibles para lending y borrowing</p>
+                    </div>
+                    <div class="market-filters">
+                        <button class="filter-btn active" onclick="filterMarkets('all')">All</button>
+                        <button class="filter-btn" onclick="filterMarkets('stablecoins')">Stablecoins</button>
+                        <button class="filter-btn" onclick="filterMarkets('crypto')">Crypto</button>
+                    </div>
+                </div>
+
+                <div class="markets-table">
                     <table>
                         <thead>
                             <tr>
@@ -503,75 +840,182 @@
                                 <th>Supply APY</th>
                                 <th>Borrow APY</th>
                                 <th>Total Supplied</th>
+                                <th>Total Borrowed</th>
+                                <th>Utilization</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="marketsTableBody">
+                            <!-- USDC -->
+                            <tr data-category="stablecoins">
                                 <td>
-                                    <div class="asset">
-                                        <div class="asset-icon" style="background: #2775CA;">💵</div>
-                                        <span>USDC</span>
+                                    <div class="asset-info">
+                                        <div class="asset-icon" style="background: linear-gradient(135deg, #2775CA 0%, #1E5FAD 100%);">💵</div>
+                                        <div>
+                                            <div class="asset-name">USD Coin</div>
+                                            <div class="asset-symbol">USDC</div>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="apy-supply">4.25%</td>
-                                <td class="apy-borrow">6.80%</td>
-                                <td>$890M</td>
+                                <td><div class="apy-value apy-supply">4.25%</div></td>
+                                <td><div class="apy-value apy-borrow">6.80%</div></td>
+                                <td>$890.5M</td>
+                                <td>$623.2M</td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-supply" onclick="checkConnectionAndOpenModal('USDC', 'supply')">Supply</button>
-                                        <button class="btn btn-borrow" onclick="checkConnectionAndOpenModal('USDC', 'borrow')">Borrow</button>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">70.0%</div>
+                                    <div class="utilization-bar">
+                                        <div class="utilization-fill" style="width: 70%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-supply" onclick="openModal('USDC', 'supply', 4.25)">Supply</button>
+                                        <button class="btn-borrow" onclick="openModal('USDC', 'borrow', 6.80)">Borrow</button>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+
+                            <!-- ETH -->
+                            <tr data-category="crypto">
                                 <td>
-                                    <div class="asset">
-                                        <div class="asset-icon" style="background: #627EEA;">⟠</div>
-                                        <span>ETH</span>
+                                    <div class="asset-info">
+                                        <div class="asset-icon" style="background: linear-gradient(135deg, #627EEA 0%, #4A5FD1 100%);">⟠</div>
+                                        <div>
+                                            <div class="asset-name">Ethereum</div>
+                                            <div class="asset-symbol">ETH</div>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="apy-supply">2.15%</td>
-                                <td class="apy-borrow">3.45%</td>
+                                <td><div class="apy-value apy-supply">2.15%</div></td>
+                                <td><div class="apy-value apy-borrow">3.45%</div></td>
                                 <td>$1.2B</td>
+                                <td>$780M</td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-supply" onclick="checkConnectionAndOpenModal('ETH', 'supply')">Supply</button>
-                                        <button class="btn btn-borrow" onclick="checkConnectionAndOpenModal('ETH', 'borrow')">Borrow</button>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">65.0%</div>
+                                    <div class="utilization-bar">
+                                        <div class="utilization-fill" style="width: 65%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-supply" onclick="openModal('ETH', 'supply', 2.15)">Supply</button>
+                                        <button class="btn-borrow" onclick="openModal('ETH', 'borrow', 3.45)">Borrow</button>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+
+                            <!-- WBTC -->
+                            <tr data-category="crypto">
                                 <td>
-                                    <div class="asset">
-                                        <div class="asset-icon" style="background: #F7931A;">₿</div>
-                                        <span>WBTC</span>
+                                    <div class="asset-info">
+                                        <div class="asset-icon" style="background: linear-gradient(135deg, #F7931A 0%, #D97B0F 100%);">₿</div>
+                                        <div>
+                                            <div class="asset-name">Wrapped Bitcoin</div>
+                                            <div class="asset-symbol">WBTC</div>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="apy-supply">0.85%</td>
-                                <td class="apy-borrow">2.90%</td>
-                                <td>$560M</td>
+                                <td><div class="apy-value apy-supply">0.85%</div></td>
+                                <td><div class="apy-value apy-borrow">2.90%</div></td>
+                                <td>$560.3M</td>
+                                <td>$336.2M</td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-supply" onclick="checkConnectionAndOpenModal('WBTC', 'supply')">Supply</button>
-                                        <button class="btn btn-borrow" onclick="checkConnectionAndOpenModal('WBTC', 'borrow')">Borrow</button>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">60.0%</div>
+                                    <div class="utilization-bar">
+                                        <div class="utilization-fill" style="width: 60%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-supply" onclick="openModal('WBTC', 'supply', 0.85)">Supply</button>
+                                        <button class="btn-borrow" onclick="openModal('WBTC', 'borrow', 2.90)">Borrow</button>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+
+                            <!-- DAI -->
+                            <tr data-category="stablecoins">
                                 <td>
-                                    <div class="asset">
-                                        <div class="asset-icon" style="background: #F4B731;">◈</div>
-                                        <span>DAI</span>
+                                    <div class="asset-info">
+                                        <div class="asset-icon" style="background: linear-gradient(135deg, #F4B731 0%, #D49A1F 100%);">◈</div>
+                                        <div>
+                                            <div class="asset-name">Dai Stablecoin</div>
+                                            <div class="asset-symbol">DAI</div>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="apy-supply">5.10%</td>
-                                <td class="apy-borrow">7.20%</td>
-                                <td>$420M</td>
+                                <td><div class="apy-value apy-supply">5.10%</div></td>
+                                <td><div class="apy-value apy-borrow">7.20%</div></td>
+                                <td>$420.8M</td>
+                                <td>$315.6M</td>
                                 <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn-supply" onclick="checkConnectionAndOpenModal('DAI', 'supply')">Supply</button>
-                                        <button class="btn btn-borrow" onclick="checkConnectionAndOpenModal('DAI', 'borrow')">Borrow</button>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">75.0%</div>
+                                    <div class="utilization-bar">
+                                        <div class="utilization-fill" style="width: 75%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-supply" onclick="openModal('DAI', 'supply', 5.10)">Supply</button>
+                                        <button class="btn-borrow" onclick="openModal('DAI', 'borrow', 7.20)">Borrow</button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- USDT -->
+                            <tr data-category="stablecoins">
+                                <td>
+                                    <div class="asset-info">
+                                        <div class="asset-icon" style="background: linear-gradient(135deg, #26A17B 0%, #1E8A66 100%);">₮</div>
+                                        <div>
+                                            <div class="asset-name">Tether USD</div>
+                                            <div class="asset-symbol">USDT</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><div class="apy-value apy-supply">4.50%</div></td>
+                                <td><div class="apy-value apy-borrow">6.95%</div></td>
+                                <td>$780.2M</td>
+                                <td>$585.2M</td>
+                                <td>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">75.0%</div>
+                                    <div class="utilization-bar">
+                                        <div class="utilization-fill" style="width: 75%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-supply" onclick="openModal('USDT', 'supply', 4.50)">Supply</button>
+                                        <button class="btn-borrow" onclick="openModal('USDT', 'borrow', 6.95)">Borrow</button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- LINK -->
+                            <tr data-category="crypto">
+                                <td>
+                                    <div class="asset-info">
+                                        <div class="asset-icon" style="background: linear-gradient(135deg, #2A5ADA 0%, #1E47B5 100%);">⬡</div>
+                                        <div>
+                                            <div class="asset-name">Chainlink</div>
+                                            <div class="asset-symbol">LINK</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><div class="apy-value apy-supply">1.25%</div></td>
+                                <td><div class="apy-value apy-borrow">4.10%</div></td>
+                                <td>$125.4M</td>
+                                <td>$62.7M</td>
+                                <td>
+                                    <div style="font-weight: 600; margin-bottom: 0.5rem;">50.0%</div>
+                                    <div class="utilization-bar">
+                                        <div class="utilization-fill" style="width: 50%;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="btn-supply" onclick="openModal('LINK', 'supply', 1.25)">Supply</button>
+                                        <button class="btn-borrow" onclick="openModal('LINK', 'borrow', 4.10)">Borrow</button>
                                     </div>
                                 </td>
                             </tr>
@@ -579,35 +1023,134 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- GOVERNANCE SECTION -->
+        <section id="governance" class="section">
+            <div class="hero">
+                <h1>Governance</h1>
+                <p>Participa en la gobernanza descentralizada de VaultFi. Vota en propuestas y decide el futuro del protocolo.</p>
+            </div>
+
+            <div class="governance-grid">
+                <div class="governance-card">
+                    <h3>🗳️ Active Proposals</h3>
+                    <p>Participa en las votaciones activas y ayuda a decidir las mejoras del protocolo.</p>
+                    <div class="proposal-list">
+                        <div class="proposal-item">
+                            <h4>VIP-12: Increase USDC Supply Cap</h4>
+                            <p style="color: #a0aec0; font-size: 0.95rem; margin: 0.5rem 0;">Propuesta para aumentar el límite de suministro de USDC de $1B a $1.5B</p>
+                            <div class="proposal-meta">
+                                <span>⏰ Ends in 3 days</span>
+                                <span>👥 2.4K voters</span>
+                            </div>
+                        </div>
+                        <div class="proposal-item">
+                            <h4>VIP-13: Add MATIC Support</h4>
+                            <p style="color: #a0aec0; font-size: 0.95rem; margin: 0.5rem 0;">Integrar Polygon (MATIC) como collateral con 60% LTV</p>
+                            <div class="proposal-meta">
+                                <span>⏰ Ends in 5 days</span>
+                                <span>👥 1.8K voters</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" style="margin-top: 1.5rem; width: 100%;" onclick="connectWallet()">
+                        Connect to Vote
+                    </button>
+                </div>
+
+                <div class="governance-card">
+                    <h3>📊 Protocol Stats</h3>
+                    <p>Estadísticas en tiempo real del protocolo VaultFi.</p>
+                    <div class="stat-row">
+                        <span class="stat-label">Total Voters</span>
+                        <span class="stat-value">12,458</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Proposals Created</span>
+                        <span class="stat-value">47</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Proposals Passed</span>
+                        <span class="stat-value">42</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">VFT Staked</span>
+                        <span class="stat-value">8.5M</span>
+                    </div>
+                    <button class="btn-secondary" style="margin-top: 1.5rem; width: 100%;">
+                        View All Proposals
+                    </button>
+                </div>
+
+                <div class="governance-card">
+                    <h3>💎 VFT Token</h3>
+                    <p>El token de gobernanza VFT te permite participar en decisiones y recibir recompensas.</p>
+                    <div class="stat-row">
+                        <span class="stat-label">Current Price</span>
+                        <span class="stat-value">$2.45</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Market Cap</span>
+                        <span class="stat-value">$24.5M</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Circulating Supply</span>
+                        <span class="stat-value">10M VFT</span>
+                    </div>
+                    <button class="btn-primary" style="margin-top: 1.5rem; width: 100%;">
+                        Buy VFT Tokens
+                    </button>
+                </div>
+
+                <div class="governance-card">
+                    <h3>📚 Documentation</h3>
+                    <p>Aprende sobre el sistema de gobernanza y cómo participar efectivamente.</p>
+                    <ul style="color: #a0aec0; line-height: 2.2; margin-top: 1rem;">
+                        <li>📖 Governance Guide</li>
+                        <li>📖 How to Create Proposals</li>
+                        <li>📖 Voting Mechanism</li>
+                        <li>📖 VFT Token Economics</li>
+                        <li>📖 Treasury Management</li>
+                    </ul>
+                    <button class="btn-secondary" style="margin-top: 1.5rem; width: 100%;">
+                        Read Documentation
+                    </button>
+                </div>
+            </div>
+        </section>
     </div>
 
     <!-- Modal -->
     <div class="modal" id="transactionModal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="asset-icon" id="modalAssetIcon" style="background: #627EEA; width: 50px; height: 50px;">⟠</div>
-                <h3 id="modalTitle">Supply ETH</h3>
+                <div class="asset-icon" id="modalAssetIcon" style="background: #627EEA; width: 56px; height: 56px; font-size: 2rem;">⟠</div>
+                <div>
+                    <h3 id="modalTitle">Supply ETH</h3>
+                    <p id="modalSubtitle" style="color: #a0aec0; font-size: 0.9rem;">Supply ETH to earn interest</p>
+                </div>
             </div>
-            
-            <div id="modalWalletWarning" style="display: none; background: rgba(245, 101, 101, 0.15); border: 1px solid #f56565; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: #feb2b2;">
-                ⚠️ Conecta tu wallet para realizar esta operación
+
+            <div id="modalWalletWarning" style="display: none; background: rgba(245, 101, 101, 0.15); border: 1px solid #f56565; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; color: #feb2b2;">
+                ⚠️ <strong>Wallet not connected</strong><br>
+                Connect your wallet to perform this operation
             </div>
-            
+
             <div class="input-group">
                 <label>Amount</label>
                 <input type="number" id="amountInput" placeholder="0.00" step="0.01">
             </div>
 
             <div class="modal-info">
-                <p><strong>You will receive:</strong> <span id="receiveAmount">0.00</span> aVaultETH</p>
-                <p><strong>APY:</strong> <span id="modalAPY">2.15%</span></p>
-                <p><strong>Transaction Fee:</strong> ~$2.50</p>
+                <p><strong>You will receive:</strong> <span id="receiveAmount">0.00</span> aVaultToken</p>
+                <p><strong>APY:</strong> <span id="modalAPY" style="color: #48bb78; font-weight: 700;">2.15%</span></p>
+                <p><strong>Estimated Gas:</strong> <span>~$2.50</span></p>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-confirm" id="confirmBtn" onclick="confirmTransaction()">Confirm Supply</button>
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-confirm" id="confirmBtn" onclick="confirmTransaction()">Confirm Supply</button>
             </div>
         </div>
     </div>
@@ -617,23 +1160,52 @@
         let provider = null;
         let currentAsset = '';
         let currentAction = '';
+        let currentAPY = 0;
 
-        // Verificar si ya hay una wallet conectada al cargar
-        window.addEventListener('load', async () => {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const accounts = await provider.listAccounts();
-                    if (accounts.length > 0) {
-                        userAccount = accounts[0];
-                        updateUIForConnectedUser();
-                    }
-                } catch (error) {
-                    console.log("No hay wallet conectada previamente");
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Update nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`a[href="#${sectionName}"]`).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Filter Markets
+        function filterMarkets(category) {
+            const rows = document.querySelectorAll('#marketsTableBody tr');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(category) || (category === 'all' && btn.textContent === 'All')) {
+                    btn.classList.add('active');
                 }
-            }
-        });
+            });
+            
+            // Filter rows
+            rows.forEach(row => {
+                if (category === 'all' || row.dataset.category === category) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
 
+        // Wallet Connection
         async function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
@@ -646,95 +1218,57 @@
                 } catch (error) {
                     console.error("Error connecting wallet:", error);
                     if (error.code === 4001) {
-                        alert("Conexión rechazada. Puedes explorar la plataforma sin conectar tu wallet.");
+                        alert("Connection rejected. You can explore the platform without connecting your wallet.");
                     } else {
-                        alert("Error al conectar la wallet");
+                        alert("Error connecting wallet");
                     }
                 }
             } else {
-                alert("Por favor instala MetaMask! https://metamask.io/");
+                alert("Please install MetaMask! https://metamask.io/");
             }
         }
 
         function updateUIForConnectedUser() {
-            // Actualizar botón de conexión
             const connectBtn = document.getElementById('connectBtn');
             const walletText = document.getElementById('walletText');
             walletText.textContent = `${userAccount.slice(0, 6)}...${userAccount.slice(-4)}`;
             connectBtn.classList.add('connected');
             
-            // Actualizar estado del portfolio
-            document.getElementById('portfolioStatus').innerHTML = '<span style="color: #48bb78;">✓ Conectado</span>';
-            
-            // Actualizar valores del portfolio con datos simulados
-            updatePortfolio();
-            
-            // Habilitar botones de acción
-            document.querySelectorAll('.btn-supply, .btn-borrow').forEach(btn => {
-                btn.disabled = false;
-            });
-        }
-
-        function updatePortfolio() {
-            // Datos simulados para demostración
-            const supplied = (Math.random() * 50000 + 10000).toFixed(2);
-            const borrowed = (Math.random() * 15000 + 5000).toFixed(2);
-            const net = (supplied - borrowed).toFixed(2);
-            
-            document.getElementById('totalSupplied').textContent = `$${supplied}`;
-            document.getElementById('totalSupplied').classList.remove('locked');
-            document.getElementById('totalBorrowed').textContent = `$${borrowed}`;
-            document.getElementById('totalBorrowed').classList.remove('locked');
-            document.getElementById('netWorth').textContent = `$${net}`;
-            document.getElementById('netWorth').classList.remove('locked');
+            // Show portfolio data
+            document.getElementById('connectPrompt').style.display = 'none';
+            document.getElementById('totalSupplied').textContent = '$12,450.00';
+            document.getElementById('totalBorrowed').textContent = '$5,230.00';
+            document.getElementById('netWorth').textContent = '$7,220.00';
             
             const healthFactorEl = document.getElementById('healthFactor');
-            healthFactorEl.textContent = (Math.random() * 3 + 2).toFixed(2);
+            healthFactorEl.textContent = '2.45';
             healthFactorEl.classList.remove('locked');
             healthFactorEl.classList.add('good');
-        }
-
-        function checkConnectionAndOpenModal(asset, action) {
-            if (!userAccount) {
-                // Mostrar mensaje amigable y sugerir conectar
-                const modal = document.getElementById('transactionModal');
-                const title = document.getElementById('modalTitle');
-                const confirmBtn = document.getElementById('confirmBtn');
-                const walletWarning = document.getElementById('modalWalletWarning');
-                const amountInput = document.getElementById('amountInput');
-                
-                title.textContent = `Conecta tu wallet`;
-                walletWarning.style.display = 'block';
-                amountInput.disabled = true;
-                confirmBtn.disabled = true;
-                confirmBtn.textContent = 'Conectar Wallet';
-                confirmBtn.onclick = function() {
-                    closeModal();
-                    connectWallet();
-                };
-                
-                // Configurar icono según el asset
-                const assetIcons = {
-                    'USDC': { bg: '#2775CA', icon: '💵' },
-                    'ETH': { bg: '#627EEA', icon: '⟠' },
-                    'WBTC': { bg: '#F7931A', icon: '₿' },
-                    'DAI': { bg: '#F4B731', icon: '◈' }
-                };
-                const iconData = assetIcons[asset] || { bg: '#627EEA', icon: '⟠' };
-                document.getElementById('modalAssetIcon').style.background = iconData.bg;
-                document.getElementById('modalAssetIcon').textContent = iconData.icon;
-                
-                modal.classList.add('active');
-                return;
-            }
             
-            // Si ya está conectado, abrir modal normal
-            openModal(asset, action);
+            // Update positions
+            document.getElementById('positionsContent').innerHTML = `
+                <div style="text-align: left;">
+                    <div class="stat-row">
+                        <span class="stat-label">🪙 USDC Supplied</span>
+                        <span class="stat-value" style="color: #48bb78;">$5,000.00</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">🪙 ETH Supplied</span>
+                        <span class="stat-value" style="color: #48bb78;">$7,450.00</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">💸 DAI Borrowed</span>
+                        <span class="stat-value" style="color: #fc8181;">$5,230.00</span>
+                    </div>
+                </div>
+            `;
         }
 
-        function openModal(asset, action) {
+        // Modal Functions
+        function openModal(asset, action, apy) {
             currentAsset = asset;
             currentAction = action;
+            currentAPY = apy;
             
             const modal = document.getElementById('transactionModal');
             const title = document.getElementById('modalTitle');
@@ -742,43 +1276,51 @@
             const walletWarning = document.getElementById('modalWalletWarning');
             const amountInput = document.getElementById('amountInput');
             
-            // Resetear estado del modal
+            // Reset modal state
             walletWarning.style.display = 'none';
             amountInput.disabled = false;
-            confirmBtn.disabled = false;
+            amountInput.value = '';
+            
+            const assetIcons = {
+                'USDC': { bg: 'linear-gradient(135deg, #2775CA 0%, #1E5FAD 100%)', icon: '💵' },
+                'ETH': { bg: 'linear-gradient(135deg, #627EEA 0%, #4A5FD1 100%)', icon: '⟠' },
+                'WBTC': { bg: 'linear-gradient(135deg, #F7931A 0%, #D97B0F 100%)', icon: '₿' },
+                'DAI': { bg: 'linear-gradient(135deg, #F4B731 0%, #D49A1F 100%)', icon: '◈' },
+                'USDT': { bg: 'linear-gradient(135deg, #26A17B 0%, #1E8A66 100%)', icon: '₮' },
+                'LINK': { bg: 'linear-gradient(135deg, #2A5ADA 0%, #1E47B5 100%)', icon: '⬡' }
+            };
+            
+            const iconData = assetIcons[asset] || assetIcons['ETH'];
+            const modalIcon = document.getElementById('modalAssetIcon');
+            modalIcon.style.background = iconData.bg;
+            modalIcon.textContent = iconData.icon;
             
             title.textContent = `${action === 'supply' ? 'Supply' : 'Borrow'} ${asset}`;
+            document.getElementById('modalSubtitle').textContent = 
+                action === 'supply' ? `Supply ${asset} to earn ${apy}% APY` : `Borrow ${asset} at ${apy}% APY`;
+            document.getElementById('modalAPY').textContent = `${apy}%`;
+            
             confirmBtn.textContent = `Confirm ${action.charAt(0).toUpperCase() + action.slice(1)}`;
             confirmBtn.onclick = confirmTransaction;
             
-            // Configurar icono según el asset
-            const assetIcons = {
-                'USDC': { bg: '#2775CA', icon: '💵' },
-                'ETH': { bg: '#627EEA', icon: '⟠' },
-                'WBTC': { bg: '#F7931A', icon: '₿' },
-                'DAI': { bg: '#F4B731', icon: '◈' }
-            };
-            const iconData = assetIcons[asset] || { bg: '#627EEA', icon: '⟠' };
-            document.getElementById('modalAssetIcon').style.background = iconData.bg;
-            document.getElementById('modalAssetIcon').textContent = iconData.icon;
-            
-            // Actualizar APY en el modal (valores de ejemplo)
-            const apyValues = {
-                'USDC': { supply: '4.25%', borrow: '6.80%' },
-                'ETH': { supply: '2.15%', borrow: '3.45%' },
-                'WBTC': { supply: '0.85%', borrow: '2.90%' },
-                'DAI': { supply: '5.10%', borrow: '7.20%' }
-            };
-            const apy = apyValues[asset];
-            document.getElementById('modalAPY').textContent = action === 'supply' ? apy.supply : apy.borrow;
+            if (!userAccount) {
+                walletWarning.style.display = 'block';
+                amountInput.disabled = true;
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Connect Wallet';
+                confirmBtn.onclick = function() {
+                    closeModal();
+                    connectWallet();
+                };
+            } else {
+                confirmBtn.disabled = false;
+            }
             
             modal.classList.add('active');
         }
 
         function closeModal() {
             document.getElementById('transactionModal').classList.remove('active');
-            // Resetear input
-            document.getElementById('amountInput').value = '';
         }
 
         async function confirmTransaction() {
@@ -790,28 +1332,22 @@
             const amount = document.getElementById('amountInput').value;
             
             if (!amount || amount <= 0) {
-                alert("Por favor ingresa una cantidad válida");
+                alert("Please enter a valid amount");
                 return;
             }
 
             try {
-                const signer = provider.getSigner();
-                
-                // Aquí iría la llamada al smart contract real
-                // Por ahora simulamos la transacción
-                
-                alert(`✅ Transacción enviada!\n\n🪙 Asset: ${currentAsset}\n📊 Amount: ${amount}\n⚡ Action: ${currentAction}\n\nEn producción, esto interactuaría con el smart contract en blockchain.`);
+                alert(`✅ Transaction Submitted!\n\n🪙 Asset: ${currentAsset}\n📊 Amount: ${amount}\n⚡ Action: ${currentAction}\n💰 APY: ${currentAPY}%\n\nIn production, this would interact with the smart contract on blockchain.`);
                 
                 closeModal();
-                updatePortfolio();
                 
             } catch (error) {
                 console.error("Transaction error:", error);
-                alert("Error en la transacción: " + error.message);
+                alert("Transaction error: " + error.message);
             }
         }
 
-        // Cerrar modal al hacer click fuera
+        // Close modal on outside click
         window.onclick = function(event) {
             const modal = document.getElementById('transactionModal');
             if (event.target === modal) {
@@ -819,13 +1355,32 @@
             }
         }
 
-        // Smooth scroll para los links de navegación
+        // Check for existing connection on load
+        window.addEventListener('load', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const accounts = await provider.listAccounts();
+                    if (accounts.length > 0) {
+                        userAccount = accounts[0];
+                        updateUIForConnectedUser();
+                    }
+                } catch (error) {
+                    console.log("No wallet previously connected");
+                }
+            }
+        });
+
+        // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
             });
         });
